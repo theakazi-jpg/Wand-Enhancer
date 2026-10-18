@@ -39,6 +39,8 @@ This repository patches the Wand Electron app from a .NET Framework WPF desktop 
 
 ## ASAR Patch Pipeline
 
+- Wand 12.62.0 auxiliary services also validate the ASAR header against the executable's `ElectronAsar` / `Integrity` resource. Apply `AuxiliaryCompatibility` for both strategies: Static handles signature, ASAR and fuse checks; Supervised handles ASAR and fuse checks. The fuse status method is located through calls to the reader anchored on its Electron fuse sentinel/wire errors, and checked for its static `(FileStream, string, process-wrapper)` to Int32-enum signature. Locate the status method structurally using `resources\app.asar` and `SHA256`, verify its static string-to-Int32-enum signature, and detach exception-handler sections when inserting an early return. Preserve legacy services without ASAR validation and fail when that capability is present but unrecognisable. Run `scripts/test-auxiliary-integrity.ps1` against copied service files; never test mutations on the live installation.
+
 - Preserve and restore both `resources/app.asar` and `resources/app.asar.unpacked` backups.
 - Inject `web-panel/dist` as `remote-panel/`; it must already contain `bridge.cjs` and generated default renderer scripts under `renderer-scripts/`. Selected/local custom renderer scripts are then copied under `remote-panel/renderer-scripts`.
 - Do not commit extracted `.source/` or `.sources/` output. Recreate it only for reverse-engineering sessions.
